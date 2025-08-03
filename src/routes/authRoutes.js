@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -66,17 +67,22 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log(">>> LOGIN ROUTE HIT <<<");
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) return res.status(400).json({ message: "All fields are required" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    // check if user exists
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    // check if password is correct
-    const isPasswordCorrect = await user.comparePassword(password);
+    console.log(">>> Found user:", user.email);
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    console.log(">>> Password match:", isPasswordCorrect);
+
     if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken(user._id);
@@ -92,7 +98,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("Error in login route", error);
+    console.error("Error in login route:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
