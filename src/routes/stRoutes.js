@@ -16,7 +16,7 @@ router.post("/",protectRoute , async(req,res) => {
         
         const newSt = new St(
             {
-                titel,
+                title,
                 caption,
                 rating,
                 image: imageUrl,
@@ -30,7 +30,7 @@ router.post("/",protectRoute , async(req,res) => {
     }
     catch(error){
         console.log("error create something")
-        res.status(500).json({massage :"error.massage"})
+        res.status(500).json({message :"error.message"})
     }
 })
 
@@ -52,7 +52,7 @@ router.get("/", protectRoute, async(req,res)=>{
         {
             sts,
             currentPage: page,
-            totalSts: total,
+            totalSts,
             totalPage: Math.ceil(totalSts / limit)
         }
         )
@@ -64,7 +64,7 @@ router.get("/", protectRoute, async(req,res)=>{
     }
 })
 
-router.delete(":id", protectRoute, async(req, res)=> {
+router.delete("/:id", protectRoute, async(req, res)=> {
     try{
         const st= await St.findById(req.params.id)
         if(!st) return res.status(404).json({message:"something not found"});
@@ -73,7 +73,7 @@ router.delete(":id", protectRoute, async(req, res)=> {
         {
             return res.status(401).json({message:"Unauthorized"})      
         }
-        if (st.image && st.image.includes("cloundinary"))
+        if (st.image && st.image.includes("cloudinary"))
         {
             try{
                 const publicId= st.image.split("/").pop().split(".")[0]

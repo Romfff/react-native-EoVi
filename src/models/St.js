@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const stSchema = new mongoose.Schema({
-    titel:{
+    title:{
         type: String,
         required: true
     },
@@ -14,7 +14,7 @@ const stSchema = new mongoose.Schema({
         required: true
     },
     rating:{
-        type: String,
+        type: Number,
         required: true,
         min: 1,
         max: 5
