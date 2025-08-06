@@ -5,34 +5,43 @@ import protectRoute from "../middleware/auth.middleware.js"
 
 const router = express.Router()
 
-router.post("/",protectRoute , async(req,res) => {
-    try{
-        const { title, caption, rating, image}= req.body
+router.post("/", protectRoute, async (req, res) => {
+  try {
+    const { title, caption, rating, image } = req.body;
+    console.log("📥 Incoming data:", { title, caption, rating, imageLength: image?.length });
 
-        if(!image) {return res.status(400).json({message:"Vui long cung cap anh"})}
-        
-        const uploadResponsse = await cloudinary.uploader.upload(image)
-        const imageUrl= uploadResponsse.secure_url
-        
-        const newSt = new St(
-            {
-                title,
-                caption,
-                rating,
-                image: imageUrl,
-                user:req.user._id
-            }
-        )
-        await newSt.save()
+    if (!title || !caption || !rating) {
+      return res.status(400).json({ message: "Please fill all fields" });
+    }
 
-        res.status(201).json(newSt)
-    
+    if (!image) {
+      return res.status(400).json({ message: "Please provide an image" });
     }
-    catch(error){
-        console.log("error create something")
-        res.status(500).json({message :"error.message"})
-    }
-})
+
+    console.log("🔑 User from protectRoute:", req.user);
+
+    // Upload Cloudinary
+    console.log("🚀 Uploading image to Cloudinary...");
+    const uploadResponse = await cloudinary.uploader.upload(image);
+    console.log("✅ Cloudinary uploaded:", uploadResponse.secure_url);
+
+    const newSt = new St({
+      title,
+      caption,
+      rating,
+      image: uploadResponse.secure_url,
+      user: req.user._id,
+    });
+
+    await newSt.save();
+    console.log("✅ New St saved:", newSt._id);
+
+    res.status(201).json(newSt);
+  } catch (error) {
+    console.error("❌ Error creating St:", error);
+    res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+});
 
 router.get("/", protectRoute, async(req,res)=>{
     try{
