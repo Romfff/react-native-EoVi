@@ -59,9 +59,9 @@ router.get("/", protectRoute, async(req,res)=>{
 
         res.send(
         {
-            sts,
+            somethings: sts,
             currentPage: page,
-            totalSts,
+            totalSomethings: totalSts,
             totalPage: Math.ceil(totalSts / limit)
         }
         )
