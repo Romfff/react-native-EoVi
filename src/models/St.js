@@ -26,6 +26,6 @@ const stSchema = new mongoose.Schema({
     },
 }, {timestamps:true})
 
-const St = mongoose.model("SomeThings",stSchema)
+const St = mongoose.model("St",stSchema)
 
 export default St
